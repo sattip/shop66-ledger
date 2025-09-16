@@ -6,9 +6,11 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\BudgetController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\CustomerController;
+use App\Http\Controllers\Api\DashboardController;
 use App\Http\Controllers\Api\DocumentController;
 use App\Http\Controllers\Api\DocumentIngestionController;
 use App\Http\Controllers\Api\ItemController;
+use App\Http\Controllers\Api\ReportsController;
 use App\Http\Controllers\Api\StoreController;
 use App\Http\Controllers\Api\StoreUserController;
 use App\Http\Controllers\Api\TaxRegionController;
@@ -28,6 +30,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('tax-regions', TaxRegionController::class);
     Route::apiResource('stores', StoreController::class);
 
+    Route::get('stores/{store}/dashboard', [DashboardController::class, 'index'])->name('stores.dashboard');
+    
+    // Reports
+    Route::prefix('stores/{store}/reports')->name('stores.reports.')->group(function () {
+        Route::get('financial-summary', [ReportsController::class, 'financialSummary'])->name('financial-summary');
+        Route::get('vendor', [ReportsController::class, 'vendorReport'])->name('vendor');
+        Route::get('category', [ReportsController::class, 'categoryReport'])->name('category');
+        Route::post('export', [ReportsController::class, 'export'])->name('export');
+        Route::get('download/{filename}', [ReportsController::class, 'download'])->name('download');
+    });
+    
     Route::apiResource('stores.users', StoreUserController::class)->only(['index', 'store', 'update', 'destroy']);
     Route::apiResource('stores.categories', CategoryController::class);
     Route::apiResource('stores.vendors', VendorController::class);
