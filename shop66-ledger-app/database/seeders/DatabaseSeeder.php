@@ -2,22 +2,61 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserRole;
+use App\Models\Store;
+use App\Models\TaxRegion;
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Support\StoreContext;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        foreach (UserRole::cases() as $role) {
+            Role::findOrCreate($role->value);
+        }
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $taxRegion = TaxRegion::firstOrCreate(
+            ['code' => 'US-DEFAULT'],
+            [
+                'name' => 'United States Default',
+                'country_code' => 'US',
+                'region' => null,
+                'default_rate' => 0,
+            ]
+        );
+
+        $store = Store::firstOrCreate(
+            ['code' => 'MAIN'],
+            [
+                'name' => 'Main Store',
+                'tax_region_id' => $taxRegion->id,
+                'currency_code' => 'USD',
+                'timezone' => 'UTC',
+            ]
+        );
+
+        $user = User::firstOrCreate(
+            ['email' => 'admin@shop66.test'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'),
+            ]
+        );
+
+        $store->users()->syncWithoutDetaching([
+            $user->id => ['role' => UserRole::SUPER_ADMIN->value],
         ]);
+
+        /** @var StoreContext $context */
+        $context = app(StoreContext::class);
+        $context->set(null);
+        $user->assignRole(UserRole::SUPER_ADMIN->value);
+        $context->set($store->id);
+        $user->assignRole(UserRole::SUPER_ADMIN->value);
+        $context->clear();
     }
 }
