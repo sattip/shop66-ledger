@@ -7,12 +7,23 @@ use Illuminate\Foundation\Configuration\Middleware;
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'store.context' => \App\Http\Middleware\SetCurrentStore::class,
+        ]);
+
+        $middleware->appendToGroup('api', 'store.context');
     })
+    ->withProviders([
+        App\Providers\AppServiceProvider::class,
+        App\Providers\StoreContextServiceProvider::class,
+        App\Providers\HorizonServiceProvider::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->create();
