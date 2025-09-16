@@ -13,6 +13,12 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         //
     })
+    ->withProviders([
+        App\Providers\AppServiceProvider::class,
+        App\Providers\StoreContextServiceProvider::class,
+        App\Providers\HorizonServiceProvider::class,
+    ])
     ->withExceptions(function (Exceptions $exceptions) {
         //
-    })->create();
+    })
+    ->create();
