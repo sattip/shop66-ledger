@@ -35,6 +35,7 @@ class BudgetController extends Controller
     public function show(Request $request, Store $store, Budget $budget): BudgetResource
     {
         $this->authorizeStore($request, $store);
+
         return new BudgetResource($budget->load(['category', 'account']));
     }
 

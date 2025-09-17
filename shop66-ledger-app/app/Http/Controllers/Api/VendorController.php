@@ -35,6 +35,7 @@ class VendorController extends Controller
     public function show(Request $request, Store $store, Vendor $vendor): VendorResource
     {
         $this->authorizeStore($request, $store);
+
         return new VendorResource($vendor);
     }
 

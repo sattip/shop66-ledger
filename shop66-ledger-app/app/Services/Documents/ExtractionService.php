@@ -30,6 +30,7 @@ class ExtractionService
         foreach ($lines as $line) {
             if (Str::contains(strtolower($line), 'invoice')) {
                 preg_match('/(\d{3,})/', $line, $matches);
+
                 return $matches[1] ?? null;
             }
         }

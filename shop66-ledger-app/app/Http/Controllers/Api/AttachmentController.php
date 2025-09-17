@@ -19,6 +19,7 @@ class AttachmentController extends Controller
     public function index(Request $request, Store $store, Document $document)
     {
         $this->authorizeStore($request, $store);
+
         return AttachmentResource::collection(
             $document->attachments()->orderByDesc('created_at')->paginate()
         );

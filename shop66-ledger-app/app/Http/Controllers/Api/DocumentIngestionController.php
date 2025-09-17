@@ -16,13 +16,12 @@ class DocumentIngestionController extends Controller
 {
     use AuthorizesStoreAccess;
 
-    public function __construct(private readonly DocumentService $service)
-    {
-    }
+    public function __construct(private readonly DocumentService $service) {}
 
     public function index(Request $request, Store $store, Document $document)
     {
         $this->authorizeStore($request, $store);
+
         return DocumentIngestionResource::collection(
             $document->ingestions()->orderByDesc('created_at')->paginate()
         );
@@ -31,6 +30,7 @@ class DocumentIngestionController extends Controller
     public function show(Request $request, Store $store, Document $document, DocumentIngestion $ingestion): DocumentIngestionResource
     {
         $this->authorizeStore($request, $store);
+
         return new DocumentIngestionResource($ingestion);
     }
 

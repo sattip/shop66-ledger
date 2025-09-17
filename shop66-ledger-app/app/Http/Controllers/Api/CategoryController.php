@@ -39,6 +39,7 @@ class CategoryController extends Controller
     public function show(Request $request, Store $store, Category $category): CategoryResource
     {
         $this->authorizeStore($request, $store);
+
         return new CategoryResource($category->load('parent'));
     }
 
