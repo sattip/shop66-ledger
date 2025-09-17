@@ -21,7 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withProviders([
         App\Providers\AppServiceProvider::class,
         App\Providers\StoreContextServiceProvider::class,
-        App\Providers\HorizonServiceProvider::class,
     ])
     ->withExceptions(function (Exceptions $exceptions) {
         //
