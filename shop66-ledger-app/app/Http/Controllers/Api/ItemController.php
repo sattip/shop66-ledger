@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Api\Concerns\AuthorizesStoreAccess;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ItemResource;
-use App\Models\Category;
 use App\Models\Item;
 use App\Models\Store;
 use Illuminate\Http\JsonResponse;
@@ -36,6 +35,7 @@ class ItemController extends Controller
     public function show(Request $request, Store $store, Item $item): ItemResource
     {
         $this->authorizeStore($request, $store);
+
         return new ItemResource($item->load('category'));
     }
 

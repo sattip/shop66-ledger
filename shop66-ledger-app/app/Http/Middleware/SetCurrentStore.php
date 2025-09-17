@@ -10,9 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class SetCurrentStore
 {
-    public function __construct(private StoreContext $context)
-    {
-    }
+    public function __construct(private StoreContext $context) {}
 
     /**
      * Handle an incoming request.

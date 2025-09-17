@@ -16,9 +16,7 @@ class TransactionController extends Controller
 {
     use AuthorizesStoreAccess;
 
-    public function __construct(private readonly TransactionService $service)
-    {
-    }
+    public function __construct(private readonly TransactionService $service) {}
 
     public function index(Request $request, Store $store)
     {
@@ -58,6 +56,7 @@ class TransactionController extends Controller
     public function show(Request $request, Store $store, Transaction $transaction): TransactionResource
     {
         $this->authorizeStore($request, $store);
+
         return new TransactionResource($transaction->load(['vendor', 'customer', 'account', 'lines']));
     }
 

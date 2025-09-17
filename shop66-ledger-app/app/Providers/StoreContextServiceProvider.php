@@ -9,6 +9,6 @@ class StoreContextServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        $this->app->singleton(StoreContext::class, fn () => new StoreContext());
+        $this->app->singleton(StoreContext::class, fn () => new StoreContext);
     }
 }

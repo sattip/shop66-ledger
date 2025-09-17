@@ -17,9 +17,7 @@ class DocumentController extends Controller
 {
     use AuthorizesStoreAccess;
 
-    public function __construct(private readonly DocumentService $service)
-    {
-    }
+    public function __construct(private readonly DocumentService $service) {}
 
     public function index(Request $request, Store $store)
     {
@@ -66,6 +64,7 @@ class DocumentController extends Controller
     public function show(Request $request, Store $store, Document $document): DocumentResource
     {
         $this->authorizeStore($request, $store);
+
         return new DocumentResource($document->load(['vendor', 'ingestions', 'lines']));
     }
 

@@ -35,6 +35,7 @@ class CustomerController extends Controller
     public function show(Request $request, Store $store, Customer $customer): CustomerResource
     {
         $this->authorizeStore($request, $store);
+
         return new CustomerResource($customer);
     }
 

@@ -18,6 +18,7 @@ class AccountController extends Controller
     public function index(Request $request, Store $store)
     {
         $this->authorizeStore($request, $store);
+
         return AccountResource::collection(
             $store->accounts()->orderBy('name')->paginate()
         );
@@ -35,6 +36,7 @@ class AccountController extends Controller
     public function show(Request $request, Store $store, Account $account): AccountResource
     {
         $this->authorizeStore($request, $store);
+
         return new AccountResource($account);
     }
 

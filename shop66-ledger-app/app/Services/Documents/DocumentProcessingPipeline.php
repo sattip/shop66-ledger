@@ -16,8 +16,7 @@ class DocumentProcessingPipeline
         private readonly OcrManager $ocrManager,
         private readonly ExtractionService $extractionService,
         private readonly MatchingService $matchingService,
-    ) {
-    }
+    ) {}
 
     public function dispatch(Document $document): void
     {

@@ -7,13 +7,10 @@ use App\Models\Store;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class DocumentService
 {
-    public function __construct(private readonly DocumentProcessingPipeline $pipeline)
-    {
-    }
+    public function __construct(private readonly DocumentProcessingPipeline $pipeline) {}
 
     public function upload(Store $store, UploadedFile $file, array $attributes = []): Document
     {
