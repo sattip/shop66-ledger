@@ -32,8 +32,8 @@ class DashboardController extends Controller
     {
         return [
             'total_transactions' => Transaction::count(),
-            'total_income' => Transaction::where('type', 'income')->sum('amount'),
-            'total_expenses' => Transaction::where('type', 'expense')->sum('amount'),
+            'total_income' => Transaction::where('type', 'income')->sum('total'),
+            'total_expenses' => Transaction::where('type', 'expense')->sum('total'),
             'pending_documents' => \App\Models\Document::where('status', 'pending_review')->count(),
         ];
     }
@@ -42,11 +42,11 @@ class DashboardController extends Controller
     {
         // Get last 12 months of data
         $monthlyData = Transaction::select(
-                DB::raw('DATE_FORMAT(date, "%Y-%m") as month'),
-                DB::raw('SUM(CASE WHEN type = "income" THEN amount ELSE 0 END) as income'),
-                DB::raw('SUM(CASE WHEN type = "expense" THEN amount ELSE 0 END) as expenses')
+                DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as month'),
+                DB::raw('SUM(CASE WHEN type = "income" THEN total ELSE 0 END) as income'),
+                DB::raw('SUM(CASE WHEN type = "expense" THEN total ELSE 0 END) as expenses')
             )
-            ->where('date', '>=', now()->subMonths(12))
+            ->where('transaction_date', '>=', now()->subMonths(12))
             ->groupBy('month')
             ->orderBy('month')
             ->get();
@@ -80,7 +80,7 @@ class DashboardController extends Controller
     private function getRecentTransactions()
     {
         return Transaction::with(['account', 'vendor'])
-            ->orderByDesc('date')
+            ->orderByDesc('transaction_date')
             ->limit(5)
             ->get();
     }
