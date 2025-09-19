@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Vendor extends Model
 {
@@ -38,6 +39,15 @@ class Vendor extends Model
         'metadata' => 'array',
         'is_active' => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Vendor $vendor) {
+            if (empty($vendor->slug) && !empty($vendor->name)) {
+                $vendor->slug = Str::slug($vendor->name);
+            }
+        });
+    }
 
     public function documents(): HasMany
     {
