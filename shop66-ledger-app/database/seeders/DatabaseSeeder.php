@@ -22,8 +22,8 @@ class DatabaseSeeder extends Seeder
         // 2. Ensure we have a default user
         $user = User::first();
         if (!$user) {
-            $user = User::factory()->create([
-                'name' => 'Admin User',
+            $user = User::create([
+                'name' => 'Admin',
                 'email' => 'admin@example.com',
                 'password' => bcrypt('password'),
             ]);
