@@ -35,16 +35,31 @@ class Vendor extends Model
         'is_active',
     ];
 
-    protected $casts = [
-        'metadata' => 'array',
-        'is_active' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'metadata' => 'array',
+            'is_active' => 'boolean',
+        ];
+    }
 
     protected static function booted(): void
     {
         static::saving(function (Vendor $vendor) {
-            if (empty($vendor->slug) && !empty($vendor->name)) {
-                $vendor->slug = Str::slug($vendor->name);
+            if (empty($vendor->slug) && ! empty($vendor->name)) {
+                $baseSlug = Str::slug($vendor->name);
+                $slug = $baseSlug;
+                $counter = 1;
+
+                while (static::where('slug', $slug)
+                    ->where('store_id', $vendor->store_id)
+                    ->where('id', '!=', $vendor->id ?? 0)
+                    ->exists()) {
+                    $slug = $baseSlug.'-'.$counter;
+                    $counter++;
+                }
+
+                $vendor->slug = $slug;
             }
         });
     }

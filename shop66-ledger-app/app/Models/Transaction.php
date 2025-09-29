@@ -42,18 +42,21 @@ class Transaction extends Model
         'metadata',
     ];
 
-    protected $casts = [
-        'transaction_date' => 'date',
-        'due_date' => 'date',
-        'approved_at' => 'datetime',
-        'posted_at' => 'datetime',
-        'exchange_rate' => 'decimal:8',
-        'subtotal' => 'decimal:4',
-        'tax_total' => 'decimal:4',
-        'total' => 'decimal:4',
-        'balance' => 'decimal:4',
-        'metadata' => 'array',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'transaction_date' => 'date',
+            'due_date' => 'date',
+            'approved_at' => 'datetime',
+            'posted_at' => 'datetime',
+            'exchange_rate' => 'decimal:8',
+            'subtotal' => 'decimal:2',
+            'tax_total' => 'decimal:2',
+            'total' => 'decimal:2',
+            'balance' => 'decimal:2',
+            'metadata' => 'array',
+        ];
+    }
 
     public function account(): BelongsTo
     {

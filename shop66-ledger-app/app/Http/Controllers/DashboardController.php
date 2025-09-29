@@ -3,29 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Transaction;
-use App\Models\Account;
-use App\Models\Vendor;
-use App\Models\Item;
-use App\Models\Category;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Yajra\DataTables\Facades\DataTables;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $stats = $this->getDashboardStats();
-        $chartData = $this->getChartData();
-        $recentTransactions = $this->getRecentTransactions();
-        $pendingDocuments = $this->getPendingDocuments();
-
-        return view('dashboard', compact(
-            'stats',
-            'chartData', 
-            'recentTransactions',
-            'pendingDocuments'
-        ));
+        // Redirect to Filament admin panel
+        return redirect('/admin');
     }
 
     private function getDashboardStats()
@@ -42,17 +27,17 @@ class DashboardController extends Controller
     {
         // Get last 12 months of data
         $monthlyData = Transaction::select(
-                DB::raw('DATE_FORMAT(transaction_date, "%Y-%m") as month'),
-                DB::raw('SUM(CASE WHEN type = "income" THEN total ELSE 0 END) as income'),
-                DB::raw('SUM(CASE WHEN type = "expense" THEN total ELSE 0 END) as expenses')
-            )
+            DB::raw('strftime("%Y-%m", transaction_date) as month'),
+            DB::raw('SUM(CASE WHEN type = "income" THEN total ELSE 0 END) as income'),
+            DB::raw('SUM(CASE WHEN type = "expense" THEN total ELSE 0 END) as expenses')
+        )
             ->where('transaction_date', '>=', now()->subMonths(12))
             ->groupBy('month')
             ->orderBy('month')
             ->get();
 
-        $labels = $monthlyData->pluck('month')->map(function($month) {
-            return date('M Y', strtotime($month . '-01'));
+        $labels = $monthlyData->pluck('month')->map(function ($month) {
+            return date('M Y', strtotime($month.'-01'));
         })->toArray();
 
         $categoryData = Transaction::join('transaction_lines', 'transactions.id', '=', 'transaction_lines.transaction_id')
@@ -73,7 +58,7 @@ class DashboardController extends Controller
             'categories' => [
                 'labels' => $categoryData->pluck('name')->toArray(),
                 'values' => $categoryData->pluck('total')->toArray(),
-            ]
+            ],
         ];
     }
 

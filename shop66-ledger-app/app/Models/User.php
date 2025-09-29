@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\UserRole;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -11,7 +13,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\PermissionRegistrar;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens;
@@ -96,5 +98,23 @@ class User extends Authenticatable
         }
 
         return false;
+    }
+
+    /**
+     * Check if user has access to a specific store.
+     */
+    public function hasStoreAccess(int $storeId): bool
+    {
+        return $this->stores()->where('stores.id', $storeId)->exists();
+    }
+
+    /**
+     * Determine if the user can access the Filament panel.
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // Simple check: allow if user is attached to any stores
+        // More complex permission checks can be added later once caching issues are resolved
+        return $this->stores()->exists();
     }
 }

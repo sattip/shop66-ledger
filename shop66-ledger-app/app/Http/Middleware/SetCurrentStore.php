@@ -46,6 +46,12 @@ class SetCurrentStore
             return Store::query()->whereKey($storeId)->first();
         }
 
+        // Fallback: use the first store assigned to the authenticated user
+        $user = $request->user();
+        if ($user) {
+            return $user->stores()->first();
+        }
+
         return null;
     }
 }

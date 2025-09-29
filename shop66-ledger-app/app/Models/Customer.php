@@ -25,15 +25,30 @@ class Customer extends Model
         'is_active',
     ];
 
-    protected $casts = [
-        'is_active' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'is_active' => 'boolean',
+        ];
+    }
 
     protected static function booted(): void
     {
         static::saving(function (Customer $customer) {
-            if (empty($customer->slug) && !empty($customer->name)) {
-                $customer->slug = Str::slug($customer->name);
+            if (empty($customer->slug) && ! empty($customer->name)) {
+                $baseSlug = Str::slug($customer->name);
+                $slug = $baseSlug;
+                $counter = 1;
+
+                while (static::where('slug', $slug)
+                    ->where('store_id', $customer->store_id)
+                    ->where('id', '!=', $customer->id ?? 0)
+                    ->exists()) {
+                    $slug = $baseSlug.'-'.$counter;
+                    $counter++;
+                }
+
+                $customer->slug = $slug;
             }
         });
     }

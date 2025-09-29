@@ -17,6 +17,7 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->appendToGroup('api', 'store.context');
+        $middleware->appendToGroup('web', 'store.context');
     })
     ->withProviders([
         App\Providers\AppServiceProvider::class,

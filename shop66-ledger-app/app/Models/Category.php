@@ -27,10 +27,13 @@ class Category extends Model
         'display_order',
     ];
 
-    protected $casts = [
-        'is_system' => 'boolean',
-        'is_active' => 'boolean',
-    ];
+    protected function casts(): array
+    {
+        return [
+            'is_system' => 'boolean',
+            'is_active' => 'boolean',
+        ];
+    }
 
     public function parent(): BelongsTo
     {
@@ -40,5 +43,18 @@ class Category extends Model
     public function children(): HasMany
     {
         return $this->hasMany(self::class, 'parent_id');
+    }
+
+    public function getFullPathAttribute(): string
+    {
+        $path = collect([$this->name]);
+        $parent = $this->parent;
+
+        while ($parent) {
+            $path->prepend($parent->name);
+            $parent = $parent->parent;
+        }
+
+        return $path->implode(' > ');
     }
 }
