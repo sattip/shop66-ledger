@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
 
 class Customer extends Model
 {
@@ -18,26 +19,24 @@ class Customer extends Model
         'store_id',
         'name',
         'slug',
-        'customer_code',
         'email',
         'phone',
-        'website',
-        'currency_code',
-        'address_line1',
-        'address_line2',
-        'city',
-        'state',
-        'postal_code',
-        'country_code',
-        'notes',
-        'metadata',
+        'address',
         'is_active',
     ];
 
     protected $casts = [
-        'metadata' => 'array',
         'is_active' => 'boolean',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Customer $customer) {
+            if (empty($customer->slug) && !empty($customer->name)) {
+                $customer->slug = Str::slug($customer->name);
+            }
+        });
+    }
 
     public function transactions(): HasMany
     {

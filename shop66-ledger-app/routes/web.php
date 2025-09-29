@@ -33,9 +33,17 @@ Route::post('/documents/{document}/approve', [DocumentController::class, 'approv
 Route::post('/documents/{document}/reject', [DocumentController::class, 'reject'])->name('documents.reject');
 Route::post('/documents/{document}/reprocess', [DocumentController::class, 'reprocess'])->name('documents.reprocess');
 
+// Vendors
+Route::middleware(['auth'])->group(function () {
+    Route::resource('vendors', \App\Http\Controllers\VendorController::class);
+});
+
+// Customers
+Route::middleware(['auth'])->group(function () {
+    Route::resource('customers', \App\Http\Controllers\CustomerController::class);
+});
+
 // Placeholder routes for other sections
-Route::get('/vendors', fn() => view('placeholder', ['title' => 'Vendors']))->name('vendors.index');
-Route::get('/customers', fn() => view('placeholder', ['title' => 'Customers']))->name('customers.index');
 Route::get('/items', fn() => view('placeholder', ['title' => 'Items']))->name('items.index');
 Route::get('/categories', fn() => view('placeholder', ['title' => 'Categories']))->name('categories.index');
 Route::get('/accounts', fn() => view('placeholder', ['title' => 'Accounts']))->name('accounts.index');
