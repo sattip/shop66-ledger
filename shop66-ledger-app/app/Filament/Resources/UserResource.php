@@ -76,12 +76,20 @@ class UserResource extends Resource
                             ->label('Ρόλοι')
                             ->relationship('roles', 'name')
                             ->columns(2)
-                            ->helperText('Επιλέξτε τους ρόλους του χρήστη'),
+                            ->disabled(fn () => ! auth()->user()->hasAnyRoleValue([\App\Enums\UserRole::ADMIN]))
+                            ->helperText(fn () => auth()->user()->hasAnyRoleValue([\App\Enums\UserRole::ADMIN])
+                                ? 'Επιλέξτε τους ρόλους του χρήστη'
+                                : 'Μόνο διαχειριστές μπορούν να ορίσουν ρόλους'
+                            ),
                         Forms\Components\CheckboxList::make('permissions')
                             ->label('Ειδικά Δικαιώματα')
                             ->relationship('permissions', 'name')
                             ->columns(2)
-                            ->helperText('Επιπλέον δικαιώματα εκτός των ρόλων'),
+                            ->disabled(fn () => ! auth()->user()->hasAnyRoleValue([\App\Enums\UserRole::ADMIN]))
+                            ->helperText(fn () => auth()->user()->hasAnyRoleValue([\App\Enums\UserRole::ADMIN])
+                                ? 'Επιπλέον δικαιώματα εκτός των ρόλων'
+                                : 'Μόνο διαχειριστές μπορούν να ορίσουν δικαιώματα'
+                            ),
                     ]),
 
                 Forms\Components\Section::make('Καταστήματα')

@@ -41,12 +41,19 @@ class CategoryResource extends Resource
                             ->schema([
                                 Forms\Components\Select::make('store_id')
                                     ->label('Κατάστημα')
-                                    ->options(Store::pluck('name', 'id'))
+                                    ->options(function () {
+                                        $user = auth()->user();
+                                        if (! $user) {
+                                            return [];
+                                        }
+
+                                        return $user->stores()->pluck('name', 'id');
+                                    })
                                     ->required()
                                     ->searchable()
-                                    ->default(fn () => Store::first()?->id)
+                                    ->default(fn () => auth()->user()?->stores()->first()?->id)
                                     ->reactive()
-                                    ->helperText('Επιλέξτε το κατάστημα για την κατηγορία'),
+                                    ->helperText('Επιλέξτε κατάστημα από τα καταστήματά σας'),
 
                                 Forms\Components\Select::make('parent_id')
                                     ->label('Γονική Κατηγορία')

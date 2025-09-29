@@ -54,19 +54,32 @@ class Invoice extends Model
 
         static::saving(function (Invoice $invoice) {
             if ($invoice->invoice_type === 'simple') {
+                // Formula: Total = Subtotal + Tax - Discount
+                // Therefore: Subtotal = Total - Tax + Discount
+                // This reverse calculation ensures consistency with calculateTotals()
                 $invoice->subtotal = $invoice->total_amount - $invoice->tax_amount + $invoice->discount_amount;
             }
         });
     }
 
+    /**
+     * Generate a unique invoice number for the given store.
+     * Uses database transaction and row locking to prevent race conditions.
+     *
+     * @param  int  $storeId  The store ID to generate the invoice number for
+     * @return string  The generated invoice number (format: INV-YYYY-NNNNN)
+     */
     public static function generateInvoiceNumber(int $storeId): string
     {
         return \DB::transaction(function () use ($storeId) {
             $prefix = 'INV-'.date('Y');
+
+            // Lock the store record to prevent race conditions across invoice creation
+            \DB::table('stores')->where('id', $storeId)->lockForUpdate()->first();
+
             $lastInvoice = self::where('store_id', $storeId)
                 ->where('invoice_number', 'like', $prefix.'%')
                 ->orderBy('invoice_number', 'desc')
-                ->lockForUpdate()
                 ->first();
 
             if ($lastInvoice) {
@@ -100,12 +113,24 @@ class Invoice extends Model
         return $this->invoice_type === 'detailed';
     }
 
+    /**
+     * Calculate invoice totals from line items.
+     * Only applies to detailed invoices that have line items.
+     * Formula: Total = Subtotal + Tax - Discount
+     */
     public function calculateTotals(): void
     {
         if ($this->isDetailed()) {
-            $this->subtotal = $this->items->sum('total');
-            $this->tax_amount = $this->items->sum('tax_amount');
+            // Sum up all line item totals (before discounts and taxes)
+            $this->subtotal = $this->items->sum(fn ($item) => $item->quantity * $item->unit_price);
+
+            // Sum up all line item discounts
             $this->discount_amount = $this->items->sum('discount_amount');
+
+            // Sum up all line item taxes
+            $this->tax_amount = $this->items->sum('tax_amount');
+
+            // Calculate final total: Subtotal + Tax - Discount
             $this->total_amount = $this->subtotal + $this->tax_amount - $this->discount_amount;
         }
     }
