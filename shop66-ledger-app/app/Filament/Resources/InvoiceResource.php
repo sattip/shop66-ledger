@@ -50,7 +50,7 @@ class InvoiceResource extends Resource
                                             return [];
                                         }
 
-                                        return $user->stores()->pluck('name', 'id');
+                                        return $user->stores()->pluck('stores.name', 'stores.id');
                                     })
                                     ->required()
                                     ->searchable()
