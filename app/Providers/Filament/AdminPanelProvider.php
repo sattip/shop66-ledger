@@ -27,7 +27,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('Shop66 Κατάστημα')
+            ->brandName('MoneyBoard')
             ->darkMode(true)
             ->darkModeBrandLogo(asset('images/logo-dark.png'))
             ->brandLogo(asset('images/logo.png'))
@@ -36,10 +36,12 @@ class AdminPanelProvider extends PanelProvider
                 'gray' => Color::Slate,
             ])
             ->navigationGroups([
-                'Οικονομικά',
-                'Αποθήκη',
+                'Επισκόπηση',
+                'Συναλλαγές',
+                'Τιμολόγια',
                 'Πελάτες & Προμηθευτές',
-                'Στατιστικά & Αναλύσεις',
+                'Αναφορές & Αναλύσεις',
+                'Λογαριασμοί',
                 'Διαχείριση',
                 'Ρυθμίσεις',
             ])
