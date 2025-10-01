@@ -74,7 +74,8 @@ class UserResource extends Resource
                     ->schema([
                         Forms\Components\CheckboxList::make('roles')
                             ->label('Ρόλοι')
-                            ->relationship('roles', 'name')
+                            ->options(fn () => \Spatie\Permission\Models\Role::pluck('name', 'id')->toArray())
+                            ->default(fn ($record) => $record?->roles->pluck('id')->toArray() ?? [])
                             ->columns(2)
                             ->disabled(fn () => ! auth()->user()->hasAnyRoleValue([\App\Enums\UserRole::ADMIN]))
                             ->helperText(fn () => auth()->user()->hasAnyRoleValue([\App\Enums\UserRole::ADMIN])
@@ -83,11 +84,14 @@ class UserResource extends Resource
                             ),
                         Forms\Components\CheckboxList::make('permissions')
                             ->label('Ειδικά Δικαιώματα')
-                            ->relationship('permissions', 'name')
+                            ->options(fn () => \Spatie\Permission\Models\Permission::pluck('name', 'id')->toArray())
+                            ->default(fn ($record) => $record?->permissions->pluck('id')->toArray() ?? [])
                             ->columns(2)
+                            ->searchable()
+                            ->bulkToggleable()
                             ->disabled(fn () => ! auth()->user()->hasAnyRoleValue([\App\Enums\UserRole::ADMIN]))
                             ->helperText(fn () => auth()->user()->hasAnyRoleValue([\App\Enums\UserRole::ADMIN])
-                                ? 'Επιπλέον δικαιώματα εκτός των ρόλων'
+                                ? 'Επιπλέον δικαιώματα εκτός των ρόλων. Χρησιμοποιήστε "Select All" για να επιλέξετε όλα.'
                                 : 'Μόνο διαχειριστές μπορούν να ορίσουν δικαιώματα'
                             ),
                     ]),

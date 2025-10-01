@@ -1,0 +1,115 @@
+# Laravel & PHP
+/vendor/
+/node_modules/
+/public/hot
+/public/storage
+/storage/*.key
+/storage/app/public/*
+!/storage/app/public/.gitkeep
+/.fleet
+/.idea
+/.vscode
+*.sublime-project
+*.sublime-workspace
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.backup
+.env.production
+
+# Build files
+/public/build/
+/public/css/
+/public/js/
+/public/mix-manifest.json
+
+# Logs
+*.log
+/storage/logs/*.log
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+.phpstorm.meta.php
+_ide_helper.php
+_ide_helper_models.php
+.phpunit.result.cache
+
+# Testing
+.phpunit.result.cache
+/coverage/
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.orig
+
+# Compiled files
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Database
+*.sqlite
+*.sqlite-journal
+database/*.sqlite
+
+# Cache
+/bootstrap/cache/*
+!/bootstrap/cache/.gitkeep
+/storage/framework/cache/*
+!/storage/framework/cache/.gitkeep
+/storage/framework/sessions/*
+!/storage/framework/sessions/.gitkeep
+/storage/framework/views/*
+!/storage/framework/views/.gitkeep
+
+# Filament
+/public/js/filament/
+/public/css/filament/
+
+# NPM/Yarn
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+
+# Composer
+composer.lock
+vendor/
+
+# Deployment
+.deployment
+deploy.sh
+
+# Documentation (if you want to ignore auto-generated docs)
+# /docs/
+
+# Temporary files
+tmp/
+temp/
+*.tmp

@@ -29,9 +29,9 @@ class DatabaseSeeder extends Seeder
             ]);
         }
 
-        // 3. Ensure SUPER_ADMIN role exists
+        // 3. Ensure ADMIN role exists
         $role = \Spatie\Permission\Models\Role::firstOrCreate(
-            ['name' => UserRole::SUPER_ADMIN->value],
+            ['name' => UserRole::ADMIN->value],
             ['guard_name' => 'web']
         );
 

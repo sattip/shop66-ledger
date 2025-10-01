@@ -28,6 +28,9 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('Shop66 Κατάστημα')
+            ->darkMode(true)
+            ->darkModeBrandLogo(asset('images/logo-dark.png'))
+            ->brandLogo(asset('images/logo.png'))
             ->colors([
                 'primary' => Color::Blue,
                 'gray' => Color::Slate,

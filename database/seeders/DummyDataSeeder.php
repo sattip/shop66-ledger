@@ -222,36 +222,47 @@ class DummyDataSeeder extends Seeder
     private function createVendors(array $stores): array
     {
         $vendorNames = [
-            'Μασούτης Α.Ε.',
-            'ΑΒ Βασιλόπουλος',
-            'Σκλαβενίτης Ο.Ε.',
-            'METRO ΑΕΒΕ',
-            'Κρητικός Τροφοδοσίες',
-            'Γαλαξίας Διανομές',
-            'Φρέσκο Γάλα Ε.Π.Ε.',
-            'Αρτοποιία Παπαδόπουλος',
-            'Κρεοπωλείο Γεωργίου',
-            'Οπωροπωλείο Νικολάου',
+            'Μασούτης Α.Ε. Χονδρική',
+            'ΑΒ Βασιλόπουλος Προμήθειες',
+            'Σκλαβενίτης Διανομές Ο.Ε.',
+            'METRO Cash & Carry ΑΕΒΕ',
+            'Κρητικός Τροφοδοσίες Α.Ε.',
+            'Γαλαξίας Διανομές Ε.Π.Ε.',
+            'Φρέσκο Γάλα Δωδώνη',
+            'Αρτοποιεία Παπαδόπουλος & ΣΙΑ',
+            'Κρεοπωλείο Γεωργίου Α.Ε.',
+            'Οπωροπωλείο Νικολάου Εισαγωγές',
+            'Ελληνικά Ποτά Α.Ε.',
+            'Αρτοποιεία Βενέτης',
+            'Κτηνοτροφική Ηπείρου',
+            'Ιχθυοκαλλιέργειες Ανδρεάδης',
+            'Οινοποιείο Τσάνταλη',
+        ];
+
+        $greekStreets = [
+            'Ερμού', 'Σταδίου', 'Πανεπιστημίου', 'Ακαδημίας', 'Πατησίων',
+            'Αθηνάς', 'Αγίου Κωνσταντίνου', 'Πειραιώς', 'Λένορμαν', 'Κηφισίας',
         ];
 
         $vendors = [];
         foreach ($stores as $store) {
             foreach ($vendorNames as $index => $name) {
+                $street = $greekStreets[array_rand($greekStreets)];
                 $vendors[] = Vendor::firstOrCreate(
                     [
                         'store_id' => $store->id,
-                        'email' => 'vendor'.($index + 1).'.'.strtolower($store->city).'@supplier.gr',
+                        'email' => 'info'.($index + 1).'.'.strtolower(str_replace(' ', '', $store->city)).'@supplier.gr',
                     ],
                     [
-                        'name' => $name.' - '.$store->city,
-                        'phone' => '+30 '.rand(210, 2610).' '.rand(1000000, 9999999),
-                        'address_line1' => 'Οδός Προμηθευτή '.rand(1, 100),
+                        'name' => $name,
+                        'phone' => '+30 '.rand(210, 2810).' '.rand(1000000, 9999999),
+                        'address_line1' => $street.' '.rand(1, 150),
                         'city' => $store->city,
                         'state' => $store->state,
                         'country_code' => 'GR',
                         'postal_code' => $store->postal_code,
-                        'tax_id' => (string) rand(100000000, 999999999),
-                        'notes' => 'Προμηθευτής για '.$store->name,
+                        'tax_id' => '0'.rand(10000000, 99999999),
+                        'notes' => 'Προμηθευτής τροφίμων και ποτών για '.$store->name,
                         'is_active' => true,
                     ]
                 );
@@ -268,29 +279,39 @@ class DummyDataSeeder extends Seeder
             'Εστιατόριο Η Καλή Γωνιά',
             'Ταβέρνα Ο Μπάμπης',
             'Ξενοδοχείο Ακρόπολις',
-            'Mini Market 24ωρο',
+            'Mini Market Νύχτα-Μέρα',
             'Κάβα Ποτών Διόνυσος',
             'Αρτοποιείο Η Φούρναρη',
             'Ζαχαροπλαστείο Γλυκά Όνειρα',
+            'Εστιατόριο Ελληνικές Γεύσεις',
+            'Καφέ Μπαρ Κεντρικό',
+            'Ψητοπωλείο Ο Νίκος',
+            'Σουβλατζίδικο Το Κύμα',
+        ];
+
+        $greekStreets = [
+            'Ερμού', 'Σταδίου', 'Πανεπιστημίου', 'Ακαδημίας', 'Πατησίων',
+            'Αθηνάς', 'Αγίου Κωνσταντίνου', 'Πειραιώς', 'Λένορμαν', 'Κηφισίας',
         ];
 
         $customers = [];
         foreach ($stores as $store) {
             foreach ($customerNames as $index => $name) {
+                $street = $greekStreets[array_rand($greekStreets)];
                 $customers[] = Customer::firstOrCreate(
                     [
                         'store_id' => $store->id,
-                        'email' => 'customer'.($index + 1).'.'.strtolower($store->city).'@client.gr',
+                        'email' => 'contact'.($index + 1).'.'.strtolower(str_replace(' ', '', $store->city)).'@client.gr',
                     ],
                     [
-                        'name' => $name.' - '.$store->city,
-                        'phone' => '+30 '.rand(210, 2610).' '.rand(1000000, 9999999),
-                        'address_line1' => 'Οδός Πελάτη '.rand(1, 100),
+                        'name' => $name,
+                        'phone' => '+30 '.rand(210, 2810).' '.rand(1000000, 9999999),
+                        'address_line1' => $street.' '.rand(1, 150),
                         'city' => $store->city,
                         'state' => $store->state,
                         'country_code' => 'GR',
                         'postal_code' => $store->postal_code,
-                        'customer_code' => 'CUST-'.str_pad($store->id * 100 + $index + 1, 4, '0', STR_PAD_LEFT),
+                        'customer_code' => 'ΠΕΛ-'.str_pad($store->id * 100 + $index + 1, 5, '0', STR_PAD_LEFT),
                         'is_active' => true,
                     ]
                 );
@@ -349,16 +370,16 @@ class DummyDataSeeder extends Seeder
                 $invoice = Invoice::create([
                     'store_id' => $store->id,
                     'vendor_id' => $vendor->id,
-                    'invoice_number' => 'INV-'.$invoiceDate->format('Y').'-'.str_pad($i + ($store->id * 1000), 5, '0', STR_PAD_LEFT),
+                    'invoice_number' => 'ΤΙΜ-'.$invoiceDate->format('Y').'-'.str_pad($i + ($store->id * 1000), 5, '0', STR_PAD_LEFT),
                     'invoice_date' => $invoiceDate,
                     'due_date' => $dueDate,
                     'invoice_type' => $invoiceType,
                     'status' => $this->randomInvoiceStatus($invoiceDate, $dueDate),
                     'subtotal' => $subtotal,
-                    'discount_amount' => rand(0, 100),
+                    'discount_amount' => rand(0, 200),
                     'tax_amount' => $taxAmount,
                     'total_amount' => $totalAmount,
-                    'notes' => 'Τιμολόγιο για αγορά προϊόντων',
+                    'notes' => 'Τιμολόγιο αγοράς εμπορευμάτων από '.$vendor->name,
                 ]);
 
                 // If detailed invoice, add items
@@ -372,37 +393,45 @@ class DummyDataSeeder extends Seeder
     private function createInvoiceItems(Invoice $invoice): void
     {
         $products = [
-            ['name' => 'Γάλα 1L', 'price' => 1.50],
-            ['name' => 'Ψωμί Τοστ', 'price' => 1.20],
-            ['name' => 'Φέτα 400γρ', 'price' => 6.50],
-            ['name' => 'Ελαιόλαδο 1L', 'price' => 8.90],
-            ['name' => 'Μακαρόνια 500γρ', 'price' => 1.80],
-            ['name' => 'Ντομάτες κιλό', 'price' => 2.30],
-            ['name' => 'Πατάτες κιλό', 'price' => 1.10],
-            ['name' => 'Κοτόπουλο κιλό', 'price' => 5.90],
-            ['name' => 'Καφές 250γρ', 'price' => 4.50],
-            ['name' => 'Ζάχαρη 1κιλό', 'price' => 1.60],
+            ['name' => 'Γάλα Φρέσκο 1L', 'price' => 1.50],
+            ['name' => 'Ψωμί Τοστ Ολικής', 'price' => 1.20],
+            ['name' => 'Φέτα ΠΟΠ 400γρ', 'price' => 6.50],
+            ['name' => 'Ελαιόλαδο Extra Virgin 1L', 'price' => 8.90],
+            ['name' => 'Μακαρόνια Νο.6 500γρ', 'price' => 1.80],
+            ['name' => 'Ντομάτες Βιολογικές (κιλό)', 'price' => 2.30],
+            ['name' => 'Πατάτες Κύπρου (κιλό)', 'price' => 1.10],
+            ['name' => 'Κοτόπουλο Φρέσκο (κιλό)', 'price' => 5.90],
+            ['name' => 'Καφές Ελληνικός 250γρ', 'price' => 4.50],
+            ['name' => 'Ζάχαρη Λευκή 1κιλό', 'price' => 1.60],
+            ['name' => 'Τυρί Γραβιέρα 300γρ', 'price' => 5.80],
+            ['name' => 'Γιαούρτι Στραγγιστό 2% 200γρ', 'price' => 2.20],
+            ['name' => 'Αυγά Ελευθέρας Βοσκής (6τεμ)', 'price' => 3.50],
+            ['name' => 'Μέλι Ελληνικό 450γρ', 'price' => 9.80],
+            ['name' => 'Ρύζι Καρολίνα 500γρ', 'price' => 2.10],
         ];
 
-        $itemCount = rand(3, 8);
+        $itemCount = rand(5, 12);
         $runningTotal = 0;
 
         for ($i = 0; $i < $itemCount; $i++) {
             $product = $products[array_rand($products)];
-            $quantity = rand(1, 10);
+            $quantity = rand(2, 25);
             $unitPrice = $product['price'];
             $subtotal = $quantity * $unitPrice;
+            $discountPercent = rand(0, 15);
+            $discountAmount = $subtotal * ($discountPercent / 100);
+            $taxableAmount = $subtotal - $discountAmount;
             $taxRate = 24;
-            $taxAmount = $subtotal * ($taxRate / 100);
-            $total = $subtotal + $taxAmount;
+            $taxAmount = $taxableAmount * ($taxRate / 100);
+            $total = $taxableAmount + $taxAmount;
 
             InvoiceItem::create([
                 'invoice_id' => $invoice->id,
                 'description' => $product['name'],
                 'quantity' => $quantity,
                 'unit_price' => $unitPrice,
-                'discount_percent' => rand(0, 10),
-                'discount_amount' => $subtotal * (rand(0, 10) / 100),
+                'discount_percent' => $discountPercent,
+                'discount_amount' => $discountAmount,
                 'tax_rate' => $taxRate,
                 'tax_amount' => $taxAmount,
                 'total' => $total,
@@ -449,12 +478,12 @@ class DummyDataSeeder extends Seeder
                         'user_id' => User::inRandomOrder()->first()->id,
                         'type' => 'income',
                         'status' => $this->randomTransactionStatus(),
-                        'reference' => 'REC-'.$transactionDate->format('Ymd').'-'.str_pad($i, 4, '0', STR_PAD_LEFT),
+                        'reference' => 'ΕΙΣ-'.$transactionDate->format('Ymd').'-'.str_pad($i, 4, '0', STR_PAD_LEFT),
                         'transaction_date' => $transactionDate,
                         'subtotal' => $subtotal,
                         'tax_total' => $subtotal * 0.24,
                         'total' => $subtotal * 1.24,
-                        'memo' => 'Πώληση προϊόντων σε '.$customer->name,
+                        'memo' => 'Είσπραξη από πώληση προϊόντων - '.$customer->name,
                         'currency_code' => 'EUR',
                         'exchange_rate' => 1,
                     ]);
@@ -474,12 +503,12 @@ class DummyDataSeeder extends Seeder
                         'user_id' => User::inRandomOrder()->first()->id,
                         'type' => 'expense',
                         'status' => $this->randomTransactionStatus(),
-                        'reference' => 'PAY-'.$transactionDate->format('Ymd').'-'.str_pad($i, 4, '0', STR_PAD_LEFT),
+                        'reference' => 'ΕΞΟ-'.$transactionDate->format('Ymd').'-'.str_pad($i, 4, '0', STR_PAD_LEFT),
                         'transaction_date' => $transactionDate,
                         'subtotal' => $subtotal,
                         'tax_total' => $subtotal * 0.24,
                         'total' => $subtotal * 1.24,
-                        'memo' => 'Αγορά από '.$vendor->name,
+                        'memo' => 'Πληρωμή για αγορά εμπορευμάτων - '.$vendor->name,
                         'currency_code' => 'EUR',
                         'exchange_rate' => 1,
                     ]);
@@ -490,52 +519,59 @@ class DummyDataSeeder extends Seeder
 
     private function createAccounts(array $stores): void
     {
+        $greekBanks = [
+            'Εθνική Τράπεζα',
+            'Alpha Bank',
+            'Eurobank',
+            'Πειραιώς',
+        ];
+
         foreach ($stores as $store) {
+            $bank = $greekBanks[array_rand($greekBanks)];
             $accounts = [
                 [
-                    'name' => 'Κύριος Τραπεζικός Λογαριασμός',
-                    'account_number' => 'GR'.rand(10, 99).' '.rand(1000, 9999).' '.rand(1000, 9999).' '.rand(1000, 9999).' '.rand(1000, 9999).' '.rand(100, 999),
+                    'name' => 'Κύριος Λογαριασμός '.$bank,
+                    'account_number' => 'GR'.rand(10, 99).rand(1000, 9999).rand(1000, 9999).rand(1000, 9999).rand(1000, 9999).rand(100, 999),
                     'type' => 'bank',
-                    'opening_balance' => rand(5000, 50000),
+                    'opening_balance' => rand(10000, 80000),
                     'is_primary' => true,
                 ],
                 [
-                    'name' => 'Ταμείο Μετρητών',
-                    'account_number' => 'CASH-'.str_pad($store->id, 3, '0', STR_PAD_LEFT),
+                    'name' => 'Ταμείο Καταστήματος',
+                    'account_number' => 'ΤΑΜ-'.$store->code.'-'.str_pad($store->id, 3, '0', STR_PAD_LEFT),
                     'type' => 'cash',
-                    'opening_balance' => rand(500, 5000),
+                    'opening_balance' => rand(1000, 8000),
                     'is_primary' => false,
                 ],
                 [
-                    'name' => 'Λογαριασμός Πιστωτικής Κάρτας',
+                    'name' => 'Επαγγελματική Visa',
                     'account_number' => '****-****-****-'.rand(1000, 9999),
                     'type' => 'credit_card',
-                    'opening_balance' => -rand(0, 10000),
+                    'opening_balance' => -rand(0, 15000),
                     'is_primary' => false,
                 ],
                 [
-                    'name' => 'Λογαριασμός PayPal',
-                    'account_number' => 'paypal@'.strtolower($store->city).'.shop66.gr',
+                    'name' => 'Viva Wallet',
+                    'account_number' => 'viva-'.strtolower(str_replace(' ', '', $store->city)).'-'.rand(100000, 999999),
                     'type' => 'payment_gateway',
-                    'opening_balance' => rand(0, 5000),
+                    'opening_balance' => rand(500, 6000),
                     'is_primary' => false,
                 ],
             ];
 
             foreach ($accounts as $accountData) {
-                $accountName = $accountData['name'].' - '.$store->city;
                 \App\Models\Account::firstOrCreate(
                     [
                         'store_id' => $store->id,
                         'account_number' => $accountData['account_number'],
                     ],
                     [
-                        'name' => $accountName,
-                        'slug' => \Illuminate\Support\Str::slug($accountName),
+                        'name' => $accountData['name'],
+                        'slug' => \Illuminate\Support\Str::slug($accountData['name']),
                         'type' => $accountData['type'],
                         'currency_code' => 'EUR',
                         'opening_balance' => $accountData['opening_balance'],
-                        'current_balance' => $accountData['opening_balance'] + rand(-1000, 5000),
+                        'current_balance' => $accountData['opening_balance'] + rand(-2000, 8000),
                         'is_primary' => $accountData['is_primary'],
                         'is_active' => true,
                     ]
