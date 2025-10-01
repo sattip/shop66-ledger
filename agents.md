@@ -1,992 +1,243 @@
-# Shop66 Ledger - AI Agents Architecture
+<laravel-boost-guidelines>
+=== foundation rules ===
 
-## Overview
+# Laravel Boost Guidelines
 
-This document describes the AI-powered agents and automated workflows in the Shop66 Ledger system. These agents handle document processing, data extraction, validation, and intelligent matching to automate financial data entry and reduce manual work.
+The Laravel Boost guidelines are specifically curated by Laravel maintainers for this application. These guidelines should be followed closely to enhance the user's satisfaction building Laravel applications.
 
-## Agent Types
+## Foundational Context
+This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
-### 1. OCR Agent
-**Purpose**: Extract text from uploaded documents (PDFs, images)
+- php - 8.2.28
+- laravel/framework (LARAVEL) - v11
+- laravel/prompts (PROMPTS) - v0
+- laravel/sanctum (SANCTUM) - v4
+- laravel/mcp (MCP) - v0
+- laravel/pint (PINT) - v1
+- laravel/sail (SAIL) - v1
+- phpunit/phpunit (PHPUNIT) - v11
+- tailwindcss (TAILWINDCSS) - v3
 
-**Responsibilities**:
-- Receive uploaded documents from queue
-- Pre-process images (rotation, enhancement, contrast)
-- Execute OCR using configured engine
-- Store extracted text and metadata
-- Handle multi-page documents
-- Detect document language
 
-**Inputs**:
-- Document file (PDF/JPG/PNG)
-- Document ID
-- OCR engine preference
+## Conventions
+- You must follow all existing code conventions used in this application. When creating or editing a file, check sibling files for the correct structure, approach, naming.
+- Use descriptive names for variables and methods. For example, `isRegisteredForDiscounts`, not `discount()`.
+- Check for existing components to reuse before writing a new one.
 
-**Outputs**:
-- Plain text extraction
-- Positional coordinates (if available)
-- Confidence scores
-- Page-by-page breakdown
-- Processing metrics
+## Verification Scripts
+- Do not create verification scripts or tinker when tests cover that functionality and prove it works. Unit and feature tests are more important.
 
-**Error Handling**:
-- Retry with different engines on failure
-- Fall back to local Tesseract
-- Mark as manual review if all fail
+## Application Structure & Architecture
+- Stick to existing directory structure - don't create new base folders without approval.
+- Do not change the application's dependencies without approval.
 
-### 2. Document Parser Agent
-**Purpose**: Structure raw OCR text into meaningful data
+## Frontend Bundling
+- If the user doesn't see a frontend change reflected in the UI, it could mean they need to run `npm run build`, `npm run dev`, or `composer run dev`. Ask them.
 
-**Responsibilities**:
-- Analyze document layout
-- Identify document type (invoice/receipt/credit note)
-- Extract header information
-- Parse line items
-- Identify totals and taxes
-- Detect currency and dates
+## Replies
+- Be concise in your explanations - focus on what's important rather than explaining obvious details.
 
-**Inputs**:
-- OCR text
-- Document metadata
-- Parsing rules
+## Documentation Files
+- You must only create documentation files if explicitly requested by the user.
 
-**Outputs**:
-```json
+
+=== boost rules ===
+
+## Laravel Boost
+- Laravel Boost is an MCP server that comes with powerful tools designed specifically for this application. Use them.
+
+## Artisan
+- Use the `list-artisan-commands` tool when you need to call an Artisan command to double check the available parameters.
+
+## URLs
+- Whenever you share a project URL with the user you should use the `get-absolute-url` tool to ensure you're using the correct scheme, domain / IP, and port.
+
+## Tinker / Debugging
+- You should use the `tinker` tool when you need to execute PHP to debug code or query Eloquent models directly.
+- Use the `database-query` tool when you only need to read from the database.
+
+## Reading Browser Logs With the `browser-logs` Tool
+- You can read browser logs, errors, and exceptions using the `browser-logs` tool from Boost.
+- Only recent browser logs will be useful - ignore old logs.
+
+## Searching Documentation (Critically Important)
+- Boost comes with a powerful `search-docs` tool you should use before any other approaches. This tool automatically passes a list of installed packages and their versions to the remote Boost API, so it returns only version-specific documentation specific for the user's circumstance. You should pass an array of packages to filter on if you know you need docs for particular packages.
+- The 'search-docs' tool is perfect for all Laravel related packages, including Laravel, Inertia, Livewire, Filament, Tailwind, Pest, Nova, Nightwatch, etc.
+- You must use this tool to search for Laravel-ecosystem documentation before falling back to other approaches.
+- Search the documentation before making code changes to ensure we are taking the correct approach.
+- Use multiple, broad, simple, topic based queries to start. For example: `['rate limiting', 'routing rate limiting', 'routing']`.
+- Do not add package names to queries - package information is already shared. For example, use `test resource table`, not `filament 4 test resource table`.
+
+### Available Search Syntax
+- You can and should pass multiple queries at once. The most relevant results will be returned first.
+
+1. Simple Word Searches with auto-stemming - query=authentication - finds 'authenticate' and 'auth'
+2. Multiple Words (AND Logic) - query=rate limit - finds knowledge containing both "rate" AND "limit"
+3. Quoted Phrases (Exact Position) - query="infinite scroll" - Words must be adjacent and in that order
+4. Mixed Queries - query=middleware "rate limit" - "middleware" AND exact phrase "rate limit"
+5. Multiple Queries - queries=["authentication", "middleware"] - ANY of these terms
+
+
+=== php rules ===
+
+## PHP
+
+- Always use curly braces for control structures, even if it has one line.
+
+### Constructors
+- Use PHP 8 constructor property promotion in `__construct()`.
+    - <code-snippet>public function __construct(public GitHub $github) { }</code-snippet>
+- Do not allow empty `__construct()` methods with zero parameters.
+
+### Type Declarations
+- Always use explicit return type declarations for methods and functions.
+- Use appropriate PHP type hints for method parameters.
+
+<code-snippet name="Explicit Return Types and Method Params" lang="php">
+protected function isAccessible(User $user, ?string $path = null): bool
 {
-  "document_type": "invoice",
-  "header": {
-    "vendor_name": "string",
-    "vendor_tax_id": "string",
-    "document_number": "string",
-    "date": "YYYY-MM-DD",
-    "due_date": "YYYY-MM-DD"
-  },
-  "lines": [...],
-  "totals": {
-    "subtotal": 0.00,
-    "tax": 0.00,
-    "total": 0.00
-  }
+    ...
 }
-```
-
-### 3. LLM Extraction Agent
-**Purpose**: Use Large Language Models for intelligent data extraction
-
-**Responsibilities**:
-- Construct structured prompts
-- Send OCR text to LLM API
-- Parse JSON responses
-- Validate response schema
-- Handle token limits
-- Implement retry logic
-
-**Prompt Template**:
-```
-You are a financial document processor. Extract the following information from this document:
-
-[OCR TEXT]
-
-Return a JSON object with this exact structure:
-{
-  "vendor": {...},
-  "document": {...},
-  "lines": [...],
-  "totals": {...}
-}
-
-Rules:
-1. All amounts must be numbers
-2. Dates must be YYYY-MM-DD format
-3. If information is missing, use null
-4. Calculate line totals if not present
-```
-
-**Configuration**:
-```php
-[
-    'model' => 'gpt-4-turbo',
-    'temperature' => 0.1,
-    'max_tokens' => 2000,
-    'response_format' => 'json_object',
-    'timeout' => 30
-]
-```
-
-### 4. Entity Matcher Agent
-**Purpose**: Match extracted data to existing database entities
-
-**Responsibilities**:
-- Vendor matching by tax ID
-- Vendor fuzzy matching by name
-- Item catalog matching
-- Category suggestion
-- Account mapping
-- Store assignment
-
-**Matching Algorithms**:
-```php
-// Vendor Matching
-1. Exact tax_id match (confidence: 100%)
-2. Normalized name match (confidence: 90%)
-3. Trigram similarity > 0.8 (confidence: 70%)
-4. Partial name match (confidence: 50%)
-
-// Item Matching
-1. Exact SKU match (confidence: 100%)
-2. Exact name match (confidence: 95%)
-3. Fuzzy name match > 0.85 (confidence: 75%)
-4. Category + partial match (confidence: 60%)
-```
-
-**Output**:
-```json
-{
-  "vendor": {
-    "matched_id": 123,
-    "confidence": 95,
-    "method": "tax_id"
-  },
-  "items": [
-    {
-      "line": 1,
-      "matched_id": 456,
-      "confidence": 85,
-      "method": "fuzzy_name"
-    }
-  ],
-  "suggested_category_id": 789,
-  "suggested_store_id": 1
-}
-```
-
-### 5. Validation Agent
-**Purpose**: Validate extracted and matched data
-
-**Responsibilities**:
-- Arithmetic validation
-- Tax calculation verification
-- Date logic validation
-- Duplicate detection
-- Compliance checks
-- Business rule validation
-
-**Validation Rules**:
-```php
-// Arithmetic
-sum(line_totals) == subtotal ± 0.01
-subtotal + tax == total ± 0.01
-tax == subtotal * tax_rate ± 0.01
-
-// Dates
-document_date <= today()
-due_date >= document_date
-document_date reasonable (not 1900 or 2099)
-
-// Duplicates
-hash(vendor_id + date + total + doc_number) not exists
-
-// Business Rules
-total > 0
-vendor exists or can be created
-at least one line item
-currency is valid
-```
-
-**Confidence Scoring**:
-```php
-$confidence = 100;
-$confidence -= 10 if arithmetic mismatch
-$confidence -= 20 if vendor not matched
-$confidence -= 5 per unmatched item
-$confidence -= 15 if duplicate suspected
-$confidence -= 10 if dates invalid
-
-if ($confidence < 60) {
-    $status = 'manual_review_required';
-}
-```
-
-### 6. Notification Agent
-**Purpose**: Send notifications about document processing status
-
-**Responsibilities**:
-- Queue status notifications
-- Send review requests
-- Alert on errors
-- Batch notifications
-- Track delivery status
-
-**Notification Types**:
-```php
-[
-    'document.uploaded' => 'Your document has been uploaded',
-    'document.processing' => 'Processing your document...',
-    'document.extracted' => 'Data extracted, review required',
-    'document.review_needed' => 'Document needs your review',
-    'document.approved' => 'Document approved and posted',
-    'document.rejected' => 'Document rejected: {reason}',
-    'document.error' => 'Error processing document'
-]
-```
-
-### 7. Reconciliation Agent
-**Purpose**: Match bank transactions with system records
-
-**Responsibilities**:
-- Import bank statements
-- Parse transaction data
-- Match by amount and date
-- Suggest vendor matches
-- Identify missing transactions
-- Flag discrepancies
-
-**Matching Strategy**:
-```php
-// Perfect Match
-amount == transaction.total
-&& date == transaction.date
-&& vendor_reference matches
-
-// Probable Match (>80% confidence)
-amount == transaction.total
-&& date within 3 days
-&& vendor similar
-
-// Possible Match (>60% confidence)
-amount == transaction.total ± 0.10
-&& date within 7 days
-
-// No Match
-Create unreconciled entry
-```
-
-## Queue Architecture
-
-### Queue Configuration
-
-```php
-// config/queue.php
-'connections' => [
-    'documents' => [
-        'driver' => 'redis',
-        'queue' => 'documents',
-        'retry_after' => 300,
-        'block_for' => null,
-    ],
-    'ocr' => [
-        'driver' => 'redis',
-        'queue' => 'ocr-processing',
-        'retry_after' => 600,
-    ],
-    'extraction' => [
-        'driver' => 'redis',
-        'queue' => 'ai-extraction',
-        'retry_after' => 180,
-    ],
-    'notifications' => [
-        'driver' => 'redis',
-        'queue' => 'notifications',
-        'retry_after' => 60,
-    ]
-]
-```
-
-### Job Pipeline
-
-```php
-// Document Processing Pipeline
-DocumentUploadedJob::dispatch($document)
-    ->chain([
-        new PrepareDocumentJob($document),
-        new OCRDocumentJob($document),
-        new ExtractDataJob($document),
-        new MatchEntitiesJob($document),
-        new ValidateDocumentJob($document),
-        new NotifyReviewersJob($document)
-    ])
-    ->onQueue('documents')
-    ->catch(function ($exception) {
-        // Handle pipeline failure
-    });
-```
-
-### Job Classes
-
-```php
-class OCRDocumentJob implements ShouldQueue
-{
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-    public $tries = 3;
-    public $backoff = [60, 180, 300];
-    public $timeout = 120;
-
-    public function handle(OCRService $ocrService)
-    {
-        $text = $ocrService->extract($this->document);
-
-        DocumentIngestion::create([
-            'document_id' => $this->document->id,
-            'ocr_text' => $text,
-            'ocr_engine' => $ocrService->getEngine(),
-            'status' => 'completed'
-        ]);
-
-        $this->document->update(['status' => 'extracted']);
-    }
-
-    public function failed($exception)
-    {
-        $this->document->update(['status' => 'ocr_failed']);
-        Log::error('OCR failed', ['document' => $this->document->id]);
-    }
-}
-```
-
-## Service Architecture
-
-### OCR Service
-
-```php
-interface OCREngineInterface
-{
-    public function extract(string $filePath): OCRResult;
-    public function supports(string $mimeType): bool;
-}
-
-class OCRService
-{
-    protected array $engines = [
-        'textract' => TextractEngine::class,
-        'vision' => GoogleVisionEngine::class,
-        'tesseract' => TesseractEngine::class,
-    ];
-
-    public function extract(Document $document): string
-    {
-        $engine = $this->selectEngine($document);
-
-        try {
-            $result = $engine->extract($document->file_path);
-            $this->logSuccess($document, $engine, $result);
-            return $result->text;
-        } catch (Exception $e) {
-            return $this->fallbackExtraction($document);
-        }
-    }
-}
-```
-
-### LLM Service
-
-```php
-class LLMExtractionService
-{
-    protected $client;
-    protected $config;
-
-    public function extract(string $text): array
-    {
-        $prompt = $this->buildPrompt($text);
-
-        $response = $this->client->chat()->create([
-            'model' => $this->config['model'],
-            'messages' => [
-                ['role' => 'system', 'content' => $this->getSystemPrompt()],
-                ['role' => 'user', 'content' => $prompt]
-            ],
-            'temperature' => 0.1,
-            'response_format' => ['type' => 'json_object']
-        ]);
-
-        return $this->parseResponse($response);
-    }
-
-    protected function getSystemPrompt(): string
-    {
-        return "You are a financial document processor.
-                Extract structured data from documents.
-                Always return valid JSON.
-                Be precise with numbers and dates.";
-    }
-}
-```
-
-### Matching Service
-
-```php
-class EntityMatchingService
-{
-    public function matchVendor(array $vendorData): ?MatchResult
-    {
-        // Try exact tax ID match
-        if ($vendorData['tax_id']) {
-            $vendor = Vendor::where('tax_id', $vendorData['tax_id'])->first();
-            if ($vendor) {
-                return new MatchResult($vendor, 100, 'tax_id');
-            }
-        }
-
-        // Try fuzzy name match
-        $candidates = $this->fuzzySearch($vendorData['name']);
-
-        foreach ($candidates as $candidate) {
-            $similarity = $this->calculateSimilarity(
-                $vendorData['name'],
-                $candidate->name
-            );
-
-            if ($similarity > 0.8) {
-                return new MatchResult($candidate, $similarity * 100, 'fuzzy');
-            }
-        }
-
-        return null;
-    }
-
-    protected function calculateSimilarity(string $a, string $b): float
-    {
-        // Implement trigram similarity
-        $a = strtolower(trim($a));
-        $b = strtolower(trim($b));
-
-        similar_text($a, $b, $percent);
-        return $percent / 100;
-    }
-}
-```
-
-## Workflow Orchestration
-
-### Document Processing Flow
-
-```mermaid
-graph TD
-    A[Document Upload] --> B[Queue Job]
-    B --> C{File Type}
-    C -->|PDF| D[PDF Processing]
-    C -->|Image| E[Image Enhancement]
-    D --> F[OCR Extraction]
-    E --> F
-    F --> G{OCR Success?}
-    G -->|Yes| H[LLM Extraction]
-    G -->|No| I[Retry Different Engine]
-    I --> G
-    H --> J[Entity Matching]
-    J --> K[Validation]
-    K --> L{Valid?}
-    L -->|Yes| M[Auto-Approve?]
-    L -->|No| N[Manual Review]
-    M -->|Yes| O[Post Transaction]
-    M -->|No| N
-    N --> P{Approved?}
-    P -->|Yes| O
-    P -->|No| Q[Rejected]
-    O --> R[Update Ledger]
-    R --> S[Send Notifications]
-```
-
-### State Machine
-
-```php
-class DocumentStateMachine
-{
-    protected array $states = [
-        'uploaded' => ['processing'],
-        'processing' => ['extracting', 'failed'],
-        'extracting' => ['extracted', 'extraction_failed'],
-        'extracted' => ['matching', 'review'],
-        'matching' => ['matched', 'review'],
-        'matched' => ['validating'],
-        'validating' => ['valid', 'review'],
-        'valid' => ['approved', 'review'],
-        'review' => ['approved', 'rejected'],
-        'approved' => ['posting'],
-        'posting' => ['posted'],
-        'posted' => [],
-        'rejected' => ['uploaded'],
-        'failed' => ['uploaded']
-    ];
-
-    public function transition(Document $document, string $toState): bool
-    {
-        $fromState = $document->status;
-
-        if (!$this->canTransition($fromState, $toState)) {
-            throw new InvalidStateTransition(
-                "Cannot transition from {$fromState} to {$toState}"
-            );
-        }
-
-        $document->update(['status' => $toState]);
-
-        event(new DocumentStateChanged($document, $fromState, $toState));
-
-        return true;
-    }
-}
-```
-
-## Configuration
-
-### Agent Configuration
-
-```php
-// config/agents.php
-return [
-    'ocr' => [
-        'default_engine' => env('OCR_ENGINE', 'textract'),
-        'engines' => [
-            'textract' => [
-                'region' => env('AWS_DEFAULT_REGION'),
-                'version' => 'latest',
-                'timeout' => 30,
-            ],
-            'vision' => [
-                'key_file' => env('GOOGLE_VISION_KEY_FILE'),
-                'project_id' => env('GOOGLE_PROJECT_ID'),
-            ],
-            'tesseract' => [
-                'binary' => '/usr/bin/tesseract',
-                'lang' => 'eng',
-            ],
-        ],
-        'retry_attempts' => 3,
-        'retry_delay' => 60,
-    ],
-
-    'llm' => [
-        'provider' => env('LLM_PROVIDER', 'openai'),
-        'providers' => [
-            'openai' => [
-                'api_key' => env('OPENAI_API_KEY'),
-                'model' => 'gpt-4-turbo-preview',
-                'max_tokens' => 2000,
-                'temperature' => 0.1,
-            ],
-            'anthropic' => [
-                'api_key' => env('ANTHROPIC_API_KEY'),
-                'model' => 'claude-3-opus',
-                'max_tokens' => 2000,
-            ],
-        ],
-        'cache_ttl' => 3600,
-        'rate_limit' => 100,
-    ],
-
-    'matching' => [
-        'vendor' => [
-            'exact_match_confidence' => 100,
-            'fuzzy_match_threshold' => 0.8,
-            'fuzzy_match_confidence' => 75,
-            'partial_match_confidence' => 50,
-        ],
-        'item' => [
-            'sku_match_confidence' => 100,
-            'name_match_confidence' => 90,
-            'fuzzy_threshold' => 0.85,
-        ],
-    ],
-
-    'validation' => [
-        'arithmetic_tolerance' => 0.01,
-        'date_range_days' => 365,
-        'min_confidence_auto_approve' => 95,
-        'min_confidence_review' => 60,
-    ],
-
-    'notifications' => [
-        'channels' => ['database', 'mail'],
-        'batch_size' => 100,
-        'batch_delay' => 300,
-    ],
-];
-```
-
-## Monitoring & Observability
-
-### Metrics
-
-```php
-class AgentMetrics
-{
-    public function recordOCR(Document $document, $duration, $success)
-    {
-        Metric::create([
-            'type' => 'ocr_processing',
-            'document_id' => $document->id,
-            'duration_ms' => $duration,
-            'success' => $success,
-            'engine' => $document->ingestion->ocr_engine,
-        ]);
-    }
-
-    public function recordExtraction($document, $tokens, $confidence)
-    {
-        Metric::create([
-            'type' => 'llm_extraction',
-            'document_id' => $document->id,
-            'tokens_used' => $tokens,
-            'confidence_score' => $confidence,
-            'model' => config('agents.llm.provider'),
-        ]);
-    }
-
-    public function getStats(string $type, Carbon $from, Carbon $to)
-    {
-        return Metric::where('type', $type)
-            ->whereBetween('created_at', [$from, $to])
-            ->selectRaw('
-                COUNT(*) as total,
-                AVG(duration_ms) as avg_duration,
-                SUM(success) / COUNT(*) * 100 as success_rate,
-                AVG(confidence_score) as avg_confidence
-            ')
-            ->first();
-    }
-}
-```
-
-### Logging
-
-```php
-class AgentLogger
-{
-    public function logProcessing($agent, $document, $context = [])
-    {
-        Log::channel('agents')->info("Agent processing", [
-            'agent' => $agent,
-            'document_id' => $document->id,
-            'status' => $document->status,
-            'context' => $context,
-        ]);
-    }
-
-    public function logError($agent, $exception, $document = null)
-    {
-        Log::channel('agents')->error("Agent error", [
-            'agent' => $agent,
-            'error' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString(),
-            'document_id' => $document?->id,
-        ]);
-
-        // Send to error tracking
-        if (app()->bound('sentry')) {
-            app('sentry')->captureException($exception);
-        }
-    }
-}
-```
-
-### Health Checks
-
-```php
-class AgentHealthCheck
-{
-    public function check(): array
-    {
-        return [
-            'ocr' => $this->checkOCR(),
-            'llm' => $this->checkLLM(),
-            'queues' => $this->checkQueues(),
-            'storage' => $this->checkStorage(),
-        ];
-    }
-
-    protected function checkOCR(): array
-    {
-        try {
-            $testFile = storage_path('app/test/sample.pdf');
-            $result = app(OCRService::class)->test($testFile);
-
-            return [
-                'status' => 'healthy',
-                'response_time' => $result['duration'],
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 'unhealthy',
-                'error' => $e->getMessage(),
-            ];
-        }
-    }
-
-    protected function checkQueues(): array
-    {
-        $queues = ['documents', 'ocr', 'extraction', 'notifications'];
-        $status = [];
-
-        foreach ($queues as $queue) {
-            $size = Redis::llen("queues:{$queue}");
-            $status[$queue] = [
-                'size' => $size,
-                'status' => $size < 1000 ? 'healthy' : 'warning',
-            ];
-        }
-
-        return $status;
-    }
-}
-```
-
-## Performance Optimization
-
-### Caching Strategy
-
-```php
-class AgentCache
-{
-    // Cache OCR results for identical files
-    public function getOCR(string $fileHash): ?string
-    {
-        return Cache::tags(['ocr'])->get("ocr:{$fileHash}");
-    }
-
-    public function setOCR(string $fileHash, string $text): void
-    {
-        Cache::tags(['ocr'])->put(
-            "ocr:{$fileHash}",
-            $text,
-            now()->addDays(7)
-        );
-    }
-
-    // Cache LLM extractions
-    public function getExtraction(string $textHash): ?array
-    {
-        return Cache::tags(['extraction'])->get("extract:{$textHash}");
-    }
-
-    // Cache entity matches
-    public function getVendorMatch(string $query): ?int
-    {
-        return Cache::tags(['vendors'])->get("vendor:{$query}");
-    }
-}
-```
-
-### Batch Processing
-
-```php
-class BatchProcessor
-{
-    public function processBatch(Collection $documents): void
-    {
-        $documents->chunk(10)->each(function ($chunk) {
-            $jobs = $chunk->map(function ($document) {
-                return new ProcessDocumentJob($document);
-            });
-
-            Bus::batch($jobs)
-                ->name('Document Batch ' . now())
-                ->onQueue('documents')
-                ->dispatch();
-        });
-    }
-}
-```
-
-## Error Handling
-
-### Retry Strategies
-
-```php
-class RetryableAgent
-{
-    protected $maxAttempts = 3;
-    protected $retryDelay = [60, 180, 300]; // seconds
-
-    public function executeWithRetry(callable $operation)
-    {
-        $attempt = 0;
-        $lastException = null;
-
-        while ($attempt < $this->maxAttempts) {
-            try {
-                return $operation();
-            } catch (Exception $e) {
-                $lastException = $e;
-                $attempt++;
-
-                if ($attempt < $this->maxAttempts) {
-                    $delay = $this->retryDelay[$attempt - 1] ?? 60;
-                    sleep($delay);
-                }
-            }
-        }
-
-        throw new MaxRetriesExceededException(
-            "Operation failed after {$attempt} attempts",
-            0,
-            $lastException
-        );
-    }
-}
-```
-
-### Fallback Mechanisms
-
-```php
-class FallbackHandler
-{
-    public function handleOCRFailure(Document $document): void
-    {
-        // Try alternative OCR engine
-        $engines = ['textract', 'vision', 'tesseract'];
-
-        foreach ($engines as $engine) {
-            try {
-                $text = $this->tryEngine($engine, $document);
-                if ($text) return;
-            } catch (Exception $e) {
-                continue;
-            }
-        }
-
-        // All engines failed, mark for manual entry
-        $document->update(['status' => 'manual_entry_required']);
-
-        Notification::send(
-            $document->creator,
-            new ManualEntryRequired($document)
-        );
-    }
-}
-```
-
-## Testing
-
-### Unit Tests
-
-```php
-class OCRAgentTest extends TestCase
-{
-    public function test_extracts_text_from_pdf()
-    {
-        $document = Document::factory()->pdf()->create();
-        $agent = new OCRAgent($document);
-
-        $result = $agent->process();
-
-        $this->assertNotEmpty($result->text);
-        $this->assertGreaterThan(0, $result->confidence);
-    }
-
-    public function test_handles_ocr_failure()
-    {
-        $document = Document::factory()->corrupted()->create();
-        $agent = new OCRAgent($document);
-
-        $this->expectException(OCRException::class);
-
-        $agent->process();
-    }
-}
-```
-
-### Integration Tests
-
-```php
-class DocumentPipelineTest extends TestCase
-{
-    public function test_complete_document_pipeline()
-    {
-        // Upload document
-        $response = $this->postJson('/api/documents', [
-            'file' => UploadedFile::fake()->create('invoice.pdf'),
-            'store_id' => 1,
-        ]);
-
-        $document = Document::find($response->json('id'));
-
-        // Process through pipeline
-        $this->artisan('queue:work --stop-when-empty');
-
-        // Assert final state
-        $document->refresh();
-        $this->assertEquals('posted', $document->status);
-        $this->assertNotNull($document->transaction_id);
-    }
-}
-```
-
-## Deployment
-
-### Docker Configuration
-
-```dockerfile
-# Worker container for agents
-FROM php:8.3-cli
-
-RUN apt-get update && apt-get install -y \
-    tesseract-ocr \
-    poppler-utils \
-    imagemagick
-
-COPY . /app
-WORKDIR /app
-
-CMD ["php", "artisan", "queue:work", "--queue=documents,ocr,extraction"]
-```
-
-### Scaling Configuration
-
-```yaml
-# kubernetes/agents-deployment.yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: document-agents
-spec:
-  replicas: 3
-  template:
-    spec:
-      containers:
-      - name: agent-worker
-        image: shop66-agents:latest
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "1Gi"
-            cpu: "1000m"
-```
-
-## Maintenance
-
-### Regular Tasks
-
-1. **Daily**
-   - Monitor queue sizes
-   - Check error rates
-   - Review failed jobs
-
-2. **Weekly**
-   - Analyze extraction accuracy
-   - Update vendor matching database
-   - Clear processed document cache
-
-3. **Monthly**
-   - Review LLM token usage
-   - Update OCR models
-   - Performance optimization
-   - Cost analysis
-
-### Troubleshooting Guide
-
-| Issue | Possible Cause | Solution |
-|-------|---------------|----------|
-| High OCR failure rate | Poor image quality | Enable image enhancement |
-| Low extraction accuracy | Model drift | Retrain or update prompts |
-| Slow processing | Queue backlog | Scale workers |
-| High costs | Excessive LLM calls | Implement caching |
-| Duplicate transactions | Hash collision | Improve duplicate detection |
-
----
-
-*Last Updated: December 2024*
-*Version: 1.0*
-*Status: Architecture Design*
+</code-snippet>
+
+## Comments
+- Prefer PHPDoc blocks over comments. Never use comments within the code itself unless there is something _very_ complex going on.
+
+## PHPDoc Blocks
+- Add useful array shape type definitions for arrays when appropriate.
+
+## Enums
+- Typically, keys in an Enum should be TitleCase. For example: `FavoritePerson`, `BestLake`, `Monthly`.
+
+
+=== laravel/core rules ===
+
+## Do Things the Laravel Way
+
+- Use `php artisan make:` commands to create new files (i.e. migrations, controllers, models, etc.). You can list available Artisan commands using the `list-artisan-commands` tool.
+- If you're creating a generic PHP class, use `artisan make:class`.
+- Pass `--no-interaction` to all Artisan commands to ensure they work without user input. You should also pass the correct `--options` to ensure correct behavior.
+
+### Database
+- Always use proper Eloquent relationship methods with return type hints. Prefer relationship methods over raw queries or manual joins.
+- Use Eloquent models and relationships before suggesting raw database queries
+- Avoid `DB::`; prefer `Model::query()`. Generate code that leverages Laravel's ORM capabilities rather than bypassing them.
+- Generate code that prevents N+1 query problems by using eager loading.
+- Use Laravel's query builder for very complex database operations.
+
+### Model Creation
+- When creating new models, create useful factories and seeders for them too. Ask the user if they need any other things, using `list-artisan-commands` to check the available options to `php artisan make:model`.
+
+### APIs & Eloquent Resources
+- For APIs, default to using Eloquent API Resources and API versioning unless existing API routes do not, then you should follow existing application convention.
+
+### Controllers & Validation
+- Always create Form Request classes for validation rather than inline validation in controllers. Include both validation rules and custom error messages.
+- Check sibling Form Requests to see if the application uses array or string based validation rules.
+
+### Queues
+- Use queued jobs for time-consuming operations with the `ShouldQueue` interface.
+
+### Authentication & Authorization
+- Use Laravel's built-in authentication and authorization features (gates, policies, Sanctum, etc.).
+
+### URL Generation
+- When generating links to other pages, prefer named routes and the `route()` function.
+
+### Configuration
+- Use environment variables only in configuration files - never use the `env()` function directly outside of config files. Always use `config('app.name')`, not `env('APP_NAME')`.
+
+### Testing
+- When creating models for tests, use the factories for the models. Check if the factory has custom states that can be used before manually setting up the model.
+- Faker: Use methods such as `$this->faker->word()` or `fake()->randomDigit()`. Follow existing conventions whether to use `$this->faker` or `fake()`.
+- When creating tests, make use of `php artisan make:test [options] <name>` to create a feature test, and pass `--unit` to create a unit test. Most tests should be feature tests.
+
+### Vite Error
+- If you receive an "Illuminate\Foundation\ViteException: Unable to locate file in Vite manifest" error, you can run `npm run build` or ask the user to run `npm run dev` or `composer run dev`.
+
+
+=== laravel/v11 rules ===
+
+## Laravel 11
+
+- Use the `search-docs` tool to get version specific documentation.
+- Laravel 11 brought a new streamlined file structure which this project now uses.
+
+### Laravel 11 Structure
+- No middleware files in `app/Http/Middleware/`.
+- `bootstrap/app.php` is the file to register middleware, exceptions, and routing files.
+- `bootstrap/providers.php` contains application specific service providers.
+- **No app\Console\Kernel.php** - use `bootstrap/app.php` or `routes/console.php` for console configuration.
+- **Commands auto-register** - files in `app/Console/Commands/` are automatically available and do not require manual registration.
+
+### Database
+- When modifying a column, the migration must include all of the attributes that were previously defined on the column. Otherwise, they will be dropped and lost.
+- Laravel 11 allows limiting eagerly loaded records natively, without external packages: `$query->latest()->limit(10);`.
+
+### Models
+- Casts can and likely should be set in a `casts()` method on a model rather than the `$casts` property. Follow existing conventions from other models.
+
+### New Artisan Commands
+- List Artisan commands using Boost's MCP tool, if available. New commands available in Laravel 11:
+    - `php artisan make:enum`
+    - `php artisan make:class`
+    - `php artisan make:interface`
+
+
+=== pint/core rules ===
+
+## Laravel Pint Code Formatter
+
+- You must run `vendor/bin/pint --dirty` before finalizing changes to ensure your code matches the project's expected style.
+- Do not run `vendor/bin/pint --test`, simply run `vendor/bin/pint` to fix any formatting issues.
+
+
+=== phpunit/core rules ===
+
+## PHPUnit Core
+
+- This application uses PHPUnit for testing. All tests must be written as PHPUnit classes. Use `php artisan make:test --phpunit <name>` to create a new test.
+- If you see a test using "Pest", convert it to PHPUnit.
+- Every time a test has been updated, run that singular test.
+- When the tests relating to your feature are passing, ask the user if they would like to also run the entire test suite to make sure everything is still passing.
+- Tests should test all of the happy paths, failure paths, and weird paths.
+- You must not remove any tests or test files from the tests directory without approval. These are not temporary or helper files, these are core to the application.
+
+### Running Tests
+- Run the minimal number of tests, using an appropriate filter, before finalizing.
+- To run all tests: `php artisan test`.
+- To run all tests in a file: `php artisan test tests/Feature/ExampleTest.php`.
+- To filter on a particular test name: `php artisan test --filter=testName` (recommended after making a change to a related file).
+
+
+=== tailwindcss/core rules ===
+
+## Tailwind Core
+
+- Use Tailwind CSS classes to style HTML, check and use existing tailwind conventions within the project before writing your own.
+- Offer to extract repeated patterns into components that match the project's conventions (i.e. Blade, JSX, Vue, etc..)
+- Think through class placement, order, priority, and defaults - remove redundant classes, add classes to parent or child carefully to limit repetition, group elements logically
+- You can use the `search-docs` tool to get exact examples from the official documentation when needed.
+
+### Spacing
+- When listing items, use gap utilities for spacing, don't use margins.
+
+    <code-snippet name="Valid Flex Gap Spacing Example" lang="html">
+        <div class="flex gap-8">
+            <div>Superior</div>
+            <div>Michigan</div>
+            <div>Erie</div>
+        </div>
+    </code-snippet>
+
+
+### Dark Mode
+- If existing pages and components support dark mode, new pages and components must support dark mode in a similar way, typically using `dark:`.
+
+
+=== tailwindcss/v3 rules ===
+
+## Tailwind 3
+
+- Always use Tailwind CSS v3 - verify you're using only classes supported by this version.
+</laravel-boost-guidelines>

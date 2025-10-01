@@ -1,297 +1,66 @@
-# Shop66 Ledger - Financial Management System
+<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-A comprehensive Laravel 11-based financial management application designed to handle multiple retail stores' income and expenses with AI-powered document processing.
+<p align="center">
+<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
+<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+</p>
 
-## Features
+## About Laravel
 
-### ✅ Implemented Features
+Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-1. **AdminLTE 3.2 UI Framework**
-   - Responsive dashboard with Bootstrap 4
-   - Dark/light mode support
-   - Professional navigation and sidebar
-   - DataTables integration for all listings
+- [Simple, fast routing engine](https://laravel.com/docs/routing).
+- [Powerful dependency injection container](https://laravel.com/docs/container).
+- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
+- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
+- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
+- [Robust background job processing](https://laravel.com/docs/queues).
+- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
 
-2. **Transaction Management**
-   - Complete CRUD operations for income/expense transactions
-   - Line items support with categories and items
-   - Advanced filtering and search with DataTables
-   - Bulk operations and export functionality
+Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
-3. **Document Processing Interface**
-   - Drag & drop file upload with progress tracking
-   - Support for PDF, JPG, PNG, WEBP formats (max 10MB)
-   - Side-by-side document review interface
-   - Confidence scoring and field validation
-   - OCR text extraction display
+## Learning Laravel
 
-4. **Dashboard Analytics**
-   - KPI widgets (transactions, income, expenses, pending documents)
-   - Monthly income vs expenses chart (Chart.js)
-   - Category breakdown pie chart
-   - Recent transactions and pending documents tables
+Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
 
-5. **Multi-Store Architecture**
-   - Store selector in navigation
-   - Store-scoped data isolation
-   - User role-based access control
+You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-### 🔄 Partially Implemented
+If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-1. **Document Processing Pipeline**
-   - Upload and storage infrastructure ✅
-   - OCR integration (Tesseract/AWS Textract) 🔄
-   - LLM extraction (OpenAI/Anthropic) 🔄
-   - Entity matching algorithms 🔄
-   - Approval workflow ✅
+## Laravel Sponsors
 
-2. **RBAC (Role-Based Access Control)**
-   - 6 user roles defined 🔄
-   - Permission-based navigation ✅
-   - Store-scoped visibility 🔄
+We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### 📋 TODO (Not Yet Implemented)
+### Premium Partners
 
-1. **Authentication System**
-   - Laravel Breeze/Jetstream integration
-   - User registration and login
-   - Password reset functionality
-
-2. **Master Data Management**
-   - Vendors CRUD interface
-   - Customers CRUD interface
-   - Items catalog with SKU tracking
-   - Categories with hierarchy
-   - Accounts management
-
-3. **Reporting System**
-   - Income Statement generation
-   - Expense Report with filters
-   - Vendor Ledger
-   - Export to CSV/XLSX/PDF
-
-4. **API Development**
-   - Laravel Sanctum authentication
-   - RESTful API endpoints
-   - Resource transformers
-   - Rate limiting
-
-5. **Testing Infrastructure**
-   - Model factories
-   - Unit tests for services
-   - Feature tests for workflows
-   - Integration tests
-
-## Requirements
-
-- PHP 8.2+
-- MySQL 8.0+ or PostgreSQL 16+
-- Node.js 18+ (for asset compilation)
-- Redis (for caching and queues)
-
-## Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd shop66-ledger/shop66-ledger-app
-   ```
-
-2. **Install PHP dependencies**
-   ```bash
-   composer install
-   ```
-
-3. **Install Node.js dependencies**
-   ```bash
-   npm install
-   ```
-
-4. **Environment setup**
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-
-5. **Configure database**
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=shop66_ledger
-   DB_USERNAME=your_username
-   DB_PASSWORD=your_password
-   ```
-
-6. **Run migrations**
-   ```bash
-   php artisan migrate
-   ```
-
-7. **Seed the database**
-   ```bash
-   php artisan db:seed
-   ```
-
-8. **Build assets**
-   ```bash
-   npm run dev
-   ```
-
-9. **Start the development server**
-   ```bash
-   php artisan serve
-   ```
-
-## Configuration
-
-### Storage Setup
-```env
-FILESYSTEM_DISK=local
-# For production:
-# FILESYSTEM_DISK=s3
-# AWS_ACCESS_KEY_ID=your_key
-# AWS_SECRET_ACCESS_KEY=your_secret
-# AWS_DEFAULT_REGION=us-east-1
-# AWS_BUCKET=your_bucket
-```
-
-### Queue Configuration
-```env
-QUEUE_CONNECTION=redis
-REDIS_HOST=127.0.0.1
-REDIS_PASSWORD=null
-REDIS_PORT=6379
-```
-
-### OCR & AI Services
-```env
-# OCR Engine
-OCR_ENGINE=tesseract
-# or AWS_TEXTRACT_REGION=us-east-1
-
-# LLM Provider
-LLM_PROVIDER=openai
-OPENAI_API_KEY=your_openai_key
-# or ANTHROPIC_API_KEY=your_anthropic_key
-```
-
-## Development Workflow
-
-### Running the Application
-```bash
-# Start all services
-composer run dev
-
-# Or individually:
-php artisan serve          # Web server
-php artisan queue:work     # Queue worker
-php artisan horizon        # Queue monitoring
-npm run dev               # Asset watching
-```
-
-### Testing
-```bash
-# Run all tests
-php artisan test
-
-# Run specific test suite
-php artisan test --testsuite=Feature
-php artisan test --testsuite=Unit
-
-# Code coverage
-php artisan test --coverage
-```
-
-### Code Quality
-```bash
-# Run PHP CS Fixer
-./vendor/bin/pint
-
-# Run PHPStan
-./vendor/bin/phpstan analyse
-
-# Run all quality checks
-composer run check
-```
-
-## API Documentation
-
-The API documentation is available at `/api/documentation` when the application is running.
-
-Key endpoints:
-- `GET /api/transactions` - List transactions
-- `POST /api/transactions` - Create transaction
-- `GET /api/documents` - List documents
-- `POST /api/documents` - Upload documents
-- `POST /api/documents/{id}/approve` - Approve document
-
-## Architecture
-
-### Directory Structure
-```
-app/
-├── Http/Controllers/     # Web and API controllers
-├── Models/              # Eloquent models
-├── Services/            # Business logic services
-├── Jobs/                # Queue jobs
-├── Enums/               # Enumeration classes
-└── Support/             # Helper classes
-
-resources/views/
-├── layouts/             # Layout templates
-├── dashboard.blade.php  # Main dashboard
-├── transactions/        # Transaction views
-├── documents/           # Document views
-└── placeholder.blade.php # Placeholder for unimplemented features
-```
-
-### Key Services
-- `DocumentProcessingPipeline` - Handles document OCR and AI extraction
-- `OCRService` - Pluggable OCR engine abstraction
-- `LLMExtractionService` - AI-powered data extraction
-- `EntityMatchingService` - Fuzzy matching for vendors/items
-- `ReportingService` - Financial report generation
-
-## Demo Features
-
-The current implementation includes:
-
-1. **Dashboard** - `/dashboard`
-   - KPI widgets with sample data
-   - Interactive charts
-   - Recent transactions table
-   - Pending documents queue
-
-2. **Transactions** - `/transactions`
-   - Advanced DataTables with server-side processing
-   - Create/edit forms with line items
-   - Filtering and search capabilities
-
-3. **Document Upload** - `/documents/upload`
-   - Drag & drop interface
-   - File validation and preview
-   - Progress tracking
-   - Auto-processing option
-
-4. **Document Review** - `/documents/review/{id}`
-   - Side-by-side document and form view
-   - Confidence indicators for extracted data
-   - Field validation and suggestions
-   - Approve/reject workflow
+- **[Vehikl](https://vehikl.com/)**
+- **[Tighten Co.](https://tighten.co)**
+- **[WebReinvent](https://webreinvent.com/)**
+- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
+- **[64 Robots](https://64robots.com)**
+- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
+- **[Cyber-Duck](https://cyber-duck.co.uk)**
+- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
+- **[Jump24](https://jump24.co.uk)**
+- **[Redberry](https://redberry.international/laravel/)**
+- **[Active Logic](https://activelogic.com)**
+- **[byte5](https://byte5.de)**
+- **[OP.GG](https://op.gg)**
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and quality checks
-5. Submit a pull request
+Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+
+## Code of Conduct
+
+In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+
+## Security Vulnerabilities
+
+If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
 ## License
 
-This project is licensed under the MIT License.
-
-## Support
-
-For support and questions, please contact the development team or create an issue in the repository.
+The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
