@@ -8,9 +8,23 @@ use Filament\Widgets\ChartWidget;
 
 class CashFlowChartWidget extends ChartWidget
 {
-    protected static ?string $heading = 'Ταμειακές Ροές (6 Μήνες)';
+    protected static ?string $heading = 'Ταμειακές Ροές';
 
     protected static ?int $sort = 2;
+
+    protected $listeners = ['store-changed' => '$refresh', 'transaction-added' => '$refresh'];
+
+    public ?string $filter = '6months';
+
+    protected function getFilters(): ?array
+    {
+        return [
+            '3months' => '3 Μήνες',
+            '6months' => '6 Μήνες',
+            '12months' => '12 Μήνες',
+            'ytd' => 'Φέτος',
+        ];
+    }
 
     protected function getData(): array
     {
@@ -23,12 +37,20 @@ class CashFlowChartWidget extends ChartWidget
             ];
         }
 
+        // Determine number of months based on filter
+        $monthsCount = match ($this->filter) {
+            '3months' => 3,
+            '12months' => 12,
+            'ytd' => Carbon::now()->month,
+            default => 6,
+        };
+
         $months = [];
         $incomeData = [];
         $expenseData = [];
         $profitData = [];
 
-        for ($i = 5; $i >= 0; $i--) {
+        for ($i = $monthsCount - 1; $i >= 0; $i--) {
             $date = Carbon::now()->subMonths($i);
             $months[] = $date->locale('el')->translatedFormat('M Y');
 

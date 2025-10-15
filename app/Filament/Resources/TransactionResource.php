@@ -35,6 +35,22 @@ class TransactionResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    public static function getNavigationItems(): array
+    {
+        return [
+            \Filament\Navigation\NavigationItem::make('Έσοδα')
+                ->icon('heroicon-o-arrow-trending-up')
+                ->group('Οικονομικά')
+                ->sort(1)
+                ->url(static::getUrl('index', ['tableFilters' => ['type' => ['value' => 'income']]])),
+            \Filament\Navigation\NavigationItem::make('Έξοδα')
+                ->icon('heroicon-o-arrow-trending-down')
+                ->group('Οικονομικά')
+                ->sort(2)
+                ->url(static::getUrl('index', ['tableFilters' => ['type' => ['value' => 'expense']]])),
+        ];
+    }
+
     public static function form(Form $form): Form
     {
         return $form

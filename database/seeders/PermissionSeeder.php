@@ -23,13 +23,14 @@ class PermissionSeeder extends Seeder
         if (! $store) {
             $store = Store::create([
                 'name' => 'Shop66 Main Store',
-                'address' => 'Athens, Greece',
+                'code' => 'MAIN',
+                'address_line1' => 'Athens, Greece',
                 'city' => 'Athens',
                 'state' => 'Attica',
-                'country' => 'GR',
+                'country_code' => 'GR',
                 'postal_code' => '10000',
-                'phone' => '+30 210 1234567',
-                'email' => 'info@shop66.gr',
+                'contact_phone' => '+30 210 1234567',
+                'contact_email' => 'info@shop66.gr',
                 'currency_code' => 'EUR',
                 'timezone' => 'Europe/Athens',
                 'default_tax_rate' => 24,

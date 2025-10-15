@@ -14,14 +14,17 @@ class Dashboard extends BaseDashboard
 
     protected static ?int $navigationSort = -1;
 
-    protected static ?string $navigationGroup = 'Επισκόπηση';
+    protected static ?string $navigationGroup = null;
+
+    protected static bool $shouldRegisterNavigation = false;
 
     public function getWidgets(): array
     {
         return [
+            \App\Filament\Widgets\QuickAddTransactionWidget::class,
             \App\Filament\Widgets\FinancialOverviewWidget::class,
             \App\Filament\Widgets\CashFlowChartWidget::class,
-            \App\Filament\Widgets\ExpenseByCategoryWidget::class,
+            \App\Filament\Widgets\ExpenseCategoryWidget::class,
         ];
     }
 

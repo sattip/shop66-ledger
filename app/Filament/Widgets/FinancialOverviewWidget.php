@@ -6,11 +6,12 @@ use App\Models\Transaction;
 use Carbon\Carbon;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Facades\DB;
 
 class FinancialOverviewWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
+
+    protected $listeners = ['store-changed' => '$refresh', 'transaction-added' => '$refresh'];
 
     protected function getStats(): array
     {
@@ -81,6 +82,24 @@ class FinancialOverviewWidget extends BaseWidget
             ? (($currentMonthProfit - $lastMonthProfit) / abs($lastMonthProfit)) * 100
             : 0;
 
+        // Calculate additional KPIs
+        $daysInMonth = Carbon::now()->daysInMonth;
+        $daysPassed = Carbon::now()->day;
+        $avgDailyIncome = $daysPassed > 0 ? $currentMonthIncome / $daysPassed : 0;
+        $avgDailyExpense = $daysPassed > 0 ? $currentMonthExpenses / $daysPassed : 0;
+
+        // Cash Runway (months of expenses covered by balance)
+        $monthlyAvgExpense = $lastMonthExpenses > 0 ? $lastMonthExpenses : $currentMonthExpenses;
+        $cashRunway = $monthlyAvgExpense > 0 ? $balance / $monthlyAvgExpense : 0;
+
+        // Average Transaction Value
+        $transactionCount = Transaction::where('store_id', $storeId)
+            ->where('type', 'income')
+            ->where('status', 'posted')
+            ->whereBetween('transaction_date', [$currentMonthStart, $currentMonthEnd])
+            ->count();
+        $avgTransactionValue = $transactionCount > 0 ? $currentMonthIncome / $transactionCount : 0;
+
         return [
             Stat::make('Συνολικό Υπόλοιπο', '€'.number_format($balance, 2))
                 ->description('Σύνολο Εσόδων - Σύνολο Εξόδων')
@@ -104,6 +123,28 @@ class FinancialOverviewWidget extends BaseWidget
                 ->description(($profitChange >= 0 ? '+' : '').number_format($profitChange, 1).'% από τον προηγούμενο μήνα')
                 ->descriptionIcon($profitChange >= 0 ? 'heroicon-m-arrow-trending-up' : 'heroicon-m-arrow-trending-down')
                 ->color($currentMonthProfit >= 0 ? 'success' : 'danger'),
+
+            Stat::make('Μέσα Ημερήσια Έσοδα', '€'.number_format($avgDailyIncome, 2))
+                ->description('Βάσει '.$daysPassed.' ημερών του μήνα')
+                ->descriptionIcon('heroicon-m-calendar-days')
+                ->color('info')
+                ->chart($this->getIncomeTrend($storeId)),
+
+            Stat::make('Μέσα Ημερήσια Έξοδα', '€'.number_format($avgDailyExpense, 2))
+                ->description('Ρυθμός καύσης κεφαλαίων')
+                ->descriptionIcon('heroicon-m-fire')
+                ->color('warning')
+                ->chart($this->getExpenseTrend($storeId)),
+
+            Stat::make('Διάρκεια Κεφαλαίων', number_format($cashRunway, 1).' μήνες')
+                ->description($balance >= 0 ? 'Κάλυψη με τρέχον υπόλοιπο' : 'Αρνητικό υπόλοιπο')
+                ->descriptionIcon('heroicon-m-clock')
+                ->color($cashRunway >= 3 ? 'success' : ($cashRunway >= 1 ? 'warning' : 'danger')),
+
+            Stat::make('Μέση Αξία Συναλλαγής', '€'.number_format($avgTransactionValue, 2))
+                ->description($transactionCount.' συναλλαγές αυτόν τον μήνα')
+                ->descriptionIcon('heroicon-m-shopping-cart')
+                ->color('info'),
         ];
     }
 

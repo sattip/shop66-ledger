@@ -24,11 +24,7 @@ class SetCurrentStore
             $request->attributes->set('current_store', $store);
         }
 
-        try {
-            return $next($request);
-        } finally {
-            $this->context->clear();
-        }
+        return $next($request);
     }
 
     /**

@@ -6,11 +6,9 @@ use Spatie\Permission\PermissionRegistrar;
 
 class StoreContext
 {
-    private ?int $storeId = null;
-
     public function set(?int $storeId): void
     {
-        $this->storeId = $storeId;
+        session(['current_store_id' => $storeId]);
 
         if (app()->bound(PermissionRegistrar::class)) {
             app(PermissionRegistrar::class)->setPermissionsTeamId($storeId);
@@ -19,11 +17,11 @@ class StoreContext
 
     public function get(): ?int
     {
-        return $this->storeId;
+        return session('current_store_id');
     }
 
     public function clear(): void
     {
-        $this->set(null);
+        session()->forget('current_store_id');
     }
 }

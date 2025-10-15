@@ -6,7 +6,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -36,18 +35,18 @@ class AdminPanelProvider extends PanelProvider
                 'gray' => Color::Slate,
             ])
             ->navigationGroups([
-                'Επισκόπηση',
-                'Συναλλαγές',
-                'Τιμολόγια',
+                'Οικονομικά',
+                'Λογαριασμοί',
                 'Πελάτες & Προμηθευτές',
                 'Αναφορές & Αναλύσεις',
-                'Λογαριασμοί',
-                'Διαχείριση',
                 'Ρυθμίσεις',
+                'Διαχείριση',
             ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->pages([
                 \App\Filament\Pages\Dashboard::class,
+                \App\Filament\Pages\Analytics::class,
+                \App\Filament\Pages\StoresManagement::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([
@@ -67,6 +66,10 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 \App\Http\Middleware\SetCurrentStore::class,
-            ]);
+            ])
+            ->renderHook(
+                'panels::body.end',
+                fn () => view('filament.hooks.chart-js-scripts')
+            );
     }
 }
